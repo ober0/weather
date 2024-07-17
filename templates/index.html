@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Погода в городе {{ city }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/search-help.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="search">
+                <input id="search-input" type="text" autocomplete="off" placeholder="Введите город">
+            </div>
+            <div class="button-container">
+                <div id="weather-today" class="button">
+                    <p>Сегодня</p>
+                </div>
+                <div id="weather-yesterday" class="button">
+                    <p>Завтра</p>
+                </div>
+                <div id="weather-3days" class="button">
+                    <p>3 дня</p>
+                </div>
+                <div id="weather-week" class="button">
+                    <p>Неделя</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="body-main-content">
+        {{ weather }}
+    </div>
+
+
+    <div id="search-help" class="hide">
+
+        <div class="prev-cities {% if viewed_cities|length == 0 %}hide{% endif %}">
+            <div class="prev-cities-header">
+                Смотрели ранее:
+            </div>
+            <div class="prev-cities-content">
+                {% for view_city in viewed_cities %}
+                    <hr style="margin: 0">
+                    <div class="search-help-city" id="{{ view_city }}">
+                        {{ view_city }}
+                    </div>
+
+                {% endfor %}
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <script src="{{url_for('static', filename='js/header.js') }}"></script>
+</body>
+</html>

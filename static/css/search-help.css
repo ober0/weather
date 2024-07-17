@@ -1,0 +1,41 @@
+#search-help{
+    position: absolute;
+    top:50px;
+    left: 10%;
+    border-radius: 10px;
+    width: 308px;
+}
+
+.hide{
+    display: none;
+}
+
+.prev-cities-header{
+    background-color: lightgray;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 30px;
+    align-content: center;
+    padding-left: 10px;
+}
+
+.prev-cities-content{
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border: #D3D3D3FF 1px solid;
+    background-color: white;
+    align-content: center;
+
+}
+
+.search-help-city{
+    height: 30px;
+    align-content: center;
+    padding-left: 10px;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+.search-help-city:hover{
+    background-color: #f1f1f1;
+}

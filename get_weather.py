@@ -1,3 +1,5 @@
+import pprint
+
 import requests
 
 weather_codes = {
@@ -38,28 +40,45 @@ def get_coordinates(city):
 		'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36'
 	}
 	response = requests.get(nominatim_url, headers=headers)
-	print(response.status_code)
 	if response.status_code == 200:
 		data = response.json()
 		if data:
 			return data[0]['lat'], data[0]['lon']
 
 
-def get_weather(city):
-	coordinates = get_coordinates('Москва')
+def get_weather(city, time):
+	coordinates = get_coordinates(city)
 
 	api_url = f'https://api.open-meteo.com/v1/forecast?latitude={coordinates[0]}&longitude={coordinates[1]}&hourly=weather_code,temperature_2m,relative_humidity_2m,apparent_temperature,precipitation_probability,precipitation,pressure_msl,wind_speed_10m,wind_direction_10m&timezone=Europe%2FMoscow'
 	response = requests.get(api_url)
 
 	if response.status_code == 200:
 		data = response.json()
-		return convert_data(data)
+		return convert_data(data, time)
 
-def convert_data(weather):
+def convert_data(weather, time):
 	weather_data = []
-	for i in range(len(weather['hourly']['time'])):
+	if time == 'today':
+		hours_start = 0
+		hours_end = 24
+		_split = 1
+	elif time == 'yesterday':
+		hours_start = 24
+		hours_end = 48
+		_split = 1
+	elif time == '3days':
+		hours_start = 13
+		hours_end = 72
+		_split = 24
+	elif time == 'week':
+		hours_start = 13
+		hours_end = len(weather['hourly']['time'])
+		_split = 24
+
+	for i in range(hours_start, hours_end, _split):
 		weather_code = weather['hourly']['weather_code'][i]
 		weather_description = weather_codes[str(weather_code)]
+
 
 
 		data_dict = {
