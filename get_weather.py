@@ -75,14 +75,21 @@ def convert_data(weather, time):
 		hours_end = len(weather['hourly']['time'])
 		_split = 24
 
+	start = 0
 	for i in range(hours_start, hours_end, _split):
+
+
 		weather_code = weather['hourly']['weather_code'][i]
 		weather_description = weather_codes[str(weather_code)]
 
-
+		full_time = weather['hourly']['time'][i]
+		date_array = full_time.split('T')[0].split('-')
+		date = f'{date_array[2]}.{date_array[1]}.{date_array[0]}г'
+		time = full_time.split('T')[1]
+		time_res = f'{date}T{time}'
 
 		data_dict = {
-			'time': weather['hourly']['time'][i],  # Время
+			'time': time_res,  # Время
 			'temperature': weather['hourly']['apparent_temperature'][i],  # Температура по ощущениям
 			'precipitation': weather['hourly']['precipitation'][i],  # Осадки мм
 			'precipitation_probability': weather['hourly']['precipitation_probability'][i],  # Вероятность осадков %
@@ -93,5 +100,16 @@ def convert_data(weather, time):
 			'relative_humidity': weather['hourly']['relative_humidity_2m'][i],   #Влажность  %
 			'weather': weather_description    # Погода (солнечно, ливень и тд)
 		}
+		if _split == 24:
+			precipitation = 0
+			precipitation_probability = 0
+			for i in range(start, start+24):
+				print(weather['hourly']['time'][i])
+				precipitation += weather['hourly']['precipitation'][i]
+				precipitation_probability += weather['hourly']['precipitation_probability'][i]
+			precipitation_probability = precipitation_probability / 24
+			data_dict['precipitation'] = round(precipitation, 1)
+			data_dict['precipitation_probability'] = round(precipitation_probability)
+			start += 24
 		weather_data.append(data_dict)
 	return weather_data

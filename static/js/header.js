@@ -14,8 +14,9 @@ function sendCity(event) {
                 if (data.success){
                     location.href = ''
                 }else {
-                    alert('Ошибка. Попробуйте снова')
+                    alert('Ошибка. Город не найден')
                     document.getElementById('search-input').value = ''
+                    document.getElementById('search-input').blur()
                 }
             })
     }
@@ -29,15 +30,19 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('search-input').addEventListener('focus', function () {
         searchHelp.classList.remove('hide')
         isSearchOpen = true
+        searchHelp.style.opacity = 1
         document.querySelector('.search').style.opacity = 1
         mainContent.style.opacity = 0.5
         document.addEventListener('keydown', sendCity)
     })
     document.getElementById('search-input').addEventListener('blur', function () {
+        searchHelp.style.opacity = 0
         mainContent.style.opacity = 1
         isSearchOpen = false
-        searchHelp.classList.add('hide')
         document.removeEventListener('keydown', sendCity)
+        setTimeout(function () {
+            searchHelp.classList.add('hide')
+        }, 100)
     })
 
     let btns = document.querySelectorAll('.button')
@@ -50,10 +55,8 @@ document.addEventListener('DOMContentLoaded', function () {
     let search_help_city_btns = document.querySelectorAll('.search-help-city')
     search_help_city_btns.forEach(btn => {
         btn.addEventListener('click', function () {
-            console.log(1)
-            searchHelp.value = btn.id
-            var evt = new KeyboardEvent('keydown', {'keyCode':13, 'which':65});
-            document.dispatchEvent(evt);
+            let city = btn.innerText
+            window.location.href = '/?city=' + city
         })
     })
 

@@ -1,13 +1,13 @@
 #search-help{
     position: absolute;
     top:50px;
-    left: 10%;
+    left: 5%;
     border-radius: 10px;
     width: 308px;
 }
 
 .hide{
-    display: none;
+    visibility: hidden;
 }
 
 .prev-cities-header{

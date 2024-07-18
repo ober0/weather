@@ -15,7 +15,7 @@ p{
 }
 
 .header-content{
-    width: 80%;
+    width: 90%;
     position: relative;
     left: 50%;
     transform: translate(-50%);
@@ -53,4 +53,8 @@ p{
 #search-input:focus{
     outline: none;
     width: 300px;
+}
+
+.button-active{
+    background-color: #017ea6;
 }

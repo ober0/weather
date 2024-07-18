@@ -5,6 +5,7 @@
     <title>Погода в городе {{ city }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/search-help.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/body.css') }}">
 </head>
 <body>
     <div class="header">
@@ -13,26 +14,94 @@
                 <input id="search-input" type="text" autocomplete="off" placeholder="Введите город">
             </div>
             <div class="button-container">
-                <div id="weather-today" class="button">
+                <div id="weather-today" class="button {% if time == 'today' %}button-active{% endif %}">
                     <p>Сегодня</p>
                 </div>
-                <div id="weather-yesterday" class="button">
+                <div id="weather-yesterday" class="button {% if time == 'yesterday' %}button-active{% endif %}">
                     <p>Завтра</p>
                 </div>
-                <div id="weather-3days" class="button">
+                <div id="weather-3days" class="button {% if time == '3days' %}button-active{% endif %}">
                     <p>3 дня</p>
                 </div>
-                <div id="weather-week" class="button">
+                <div id="weather-week" class="button {% if time == 'week' %}button-active{% endif %}">
                     <p>Неделя</p>
                 </div>
             </div>
         </div>
     </div>
-
     <div id="body-main-content">
-        {{ weather }}
-    </div>
+        {% if time == 'today' or time == 'yesterday' %}
+            <h1>Погода на {{ weather[0].time.split('T')[0] }}</h1>
+        {% elif time == '3days' %}
+            <h1>Погода на 3 дня</h1>
+        {% else %}
+            <h1>Погода на неделю</h1>
+        {% endif %}
+        <h2>Город {{ city }}</h2>
+        <table>
+            <thead>
+                <tr>
+                    {% if time != 'today' and time != 'yesterday' %}
+                    <th>Дата</th>
+                    {% else%}
+                    <th>Время</th>
+                    {% endif %}
+                    <th>Температура </th>
+                    <th>Ощущается как</th>
+                    <th>Погода</th>
+                    <th>Вероятность осадков</th>
+                    <th>Осадки</th>
+                    <th>Давление</th>
+                    <th>Направление ветра</th>
+                    <th>Скорость ветра </th>
+                    <th>Относительная влажность</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in weather %}
 
+                {% set wind_direction_text = '' %}
+                {% if entry.wind_direction >= 337.5 or entry.wind_direction < 22.5 %}
+                    {% set wind_direction_text = 'Север' %}
+                {% elif entry.wind_direction >= 22.5 and entry.wind_direction < 67.5 %}
+                    {% set wind_direction_text = 'Северо-восток' %}
+                {% elif entry.wind_direction >= 67.5 and entry.wind_direction < 112.5 %}
+                    {% set wind_direction_text = 'Восток' %}
+                {% elif entry.wind_direction >= 112.5 and entry.wind_direction < 157.5 %}
+                    {% set wind_direction_text = 'Юго-восток' %}
+                {% elif entry.wind_direction >= 157.5 and entry.wind_direction < 202.5 %}
+                    {% set wind_direction_text = 'Юг' %}
+                {% elif entry.wind_direction >= 202.5 and entry.wind_direction < 247.5 %}
+                    {% set wind_direction_text = 'Юго-запад' %}
+                {% elif entry.wind_direction >= 247.5 and entry.wind_direction < 292.5 %}
+                    {% set wind_direction_text = 'Запад' %}
+                {% elif entry.wind_direction >= 292.5 and entry.wind_direction < 337.5 %}
+                    {% set wind_direction_text = 'Северо-запад' %}
+                {% endif %}
+
+                <tr>
+                    {% if time != 'today' and time != 'yesterday' %}
+                    <td>{{ entry.time.split('T')[0] }}</td>
+                    {% else%}
+                    <td>{{ entry.time.split('T')[1] }}</td>
+                    {% endif %}
+                    <td>{{ entry.temperature_fact }}°</td>
+                    <td>{{ entry.temperature }}°</td>
+                    <td>{{ entry.weather }}</td>
+                    <td>{{ entry.precipitation_probability }}%</td>
+                    <td>{{ entry.precipitation }} мм</td>
+                    <td>{{ entry.pressure_msl }} гПа</td>
+                    <td>{{ wind_direction_text }}</td>
+                    <td>{{ entry.wind_speed / 3.6 | round(0) }} м/с</td>
+                    <td>{{ entry.relative_humidity }}%</td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <br>
 
     <div id="search-help" class="hide">
 
