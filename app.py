@@ -1,10 +1,18 @@
 import pprint
 from get_weather import get_weather
 from flask import Flask, render_template, request, make_response, redirect, url_for, jsonify
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
+db = SQLAlchemy(app)
 
 
+class Views(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    city = db.Column(db.String(100), unique=True)
+    views = db.Column(db.Integer)
 
 @app.route('/')
 def index():
@@ -35,13 +43,32 @@ def index():
             city = search_city
             weather = get_weather(city, time)
 
+            cityToDb = city.lower()
+            views = Views.query.filter(Views.city == cityToDb).first()
+            if not views:
+                views = Views(city=cityToDb, views=0)
+            views.views += 1
+            db.session.add(views)
+            db.session.commit()
+
             resp = make_response(render_template('index.html', weather=weather, city=city, viewed_cities=viewed_cities, time=time))
             resp.set_cookie('user_city', city)
+
+
+
 
             return resp
     except:
         pass
     weather = get_weather(city, time)
+
+    views = Views.query.filter(Views.city == city).first()
+    if not views:
+        views = Views(city=city, views=0)
+    views.views += 1
+    db.session.add(views)
+    db.session.commit()
+
     return render_template('index.html', weather=weather, city=city, viewed_cities=viewed_cities, time=time)
 
 
@@ -74,5 +101,14 @@ def changeCity():
         return jsonify({
             'success': False,
         })
+
+
+@app.route('/api/checkViews')
+def checkViews():
+    views = Views.query.order_by(Views.views.desc()).all()
+    return render_template('views.html', views=views)
+
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
